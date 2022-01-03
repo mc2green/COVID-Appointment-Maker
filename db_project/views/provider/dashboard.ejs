@@ -1,0 +1,154 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+
+<link href="http://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">   
+<!--
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link rel="stylesheet"  href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css"></style>
+<script type="text/javascript" src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+<!--
+<script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+-->
+
+<script>
+  $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip(); 
+  });
+</script>
+
+<link rel="stylesheet" href="/css/style.css">
+
+<!-- Datatables initialization -->
+<script>
+  // Basic example
+  $(document).ready(function () {
+    $('#dtVerticalScrollExample').dataTable({
+      "scrollY": "400px",
+      "scrollCollapse": true,
+    });
+    $('.dataTables_length').addClass('bs-select');
+    // Datatable vertical dynamic height
+    $('#dtDynamicVerticalScrollExample').dataTable({
+      "scrollY": "40vh",
+      "scrollCollapse": true,
+      "paging": true
+    });
+    $('.dataTables_length').addClass('bs-select');
+    // Datatable horizontal scroll
+    $('#dtHorizontalExample').DataTable({
+      "scrollX": true
+    });
+    $('.dataTables_length').addClass('bs-select');
+    // Datatable horizontal and vertical scroll
+    $('#dtHorizontalVerticalExample').dataTable({
+      "scrollX": true,
+      "scrollY": 200,
+    });
+    $('.dataTables_length').addClass('bs-select');
+  });
+  var myCustomScrollbar = document.querySelector('.my-custom-scrollbar');
+  var ps = new PerfectScrollbar(myCustomScrollbar);
+
+  var scrollbarY = document.querySelector('.ps.ps--active-y>.ps__rail-y');
+
+  myCustomScrollbar.onscroll = function () {
+    scrollbarY.style.cssText =
+      `top: ${this.scrollTop}px!important; height: 400px; right: ${-this.scrollLeft}px`;
+  }
+</script>
+
+
+</script>
+
+<h2>Provider Dashboard - <%= name %></h2>
+
+<div class="container center80">
+
+  <h4>Appointment Summary (as of <%= currDate %>):</h4>
+  <div>
+  <form  action="/provider/dashboard" method="POST">
+    <table>
+      <tr>
+        <td><label for="fromDate">From Date: </label></td>
+        <td><input type="date" id="fromDate" name="fromDate" value="<%= fromDate %>" placeholder="mm/dd/yy" required></td>
+        <td>&nbsp;</td>
+        <td><label for="toDate">To Date: </label></td>
+        <td><input type="date" id="toDate" name="toDate" value="<%= toDate %>" placeholder="mm/dd/yy" required></td>
+        <td>&nbsp;</td>
+        <td><button type="submit">Change Date Range</button></td>
+      </tr>
+    </table>
+  </form>
+  </div>
+  <div class="table-wrapper-scroll-y my-custom-scrollbar">
+  <!-- <table class="table center80 table-bordered table-striped mb-0">  -->
+  <table  id="dtDynamicVerticalScrollExample" class="table center80 table-striped table-bordered" cellspacing="0"
+  width="80%">
+    <thead>
+      <tr>
+        <th>Appt. Date</th>
+        <th>Time</th>
+        <th>Quota</th>
+        <th>Available Quota</th>
+        <th>Accepted Count</th>
+        <th>Pending Count</th>
+        <th>Cancelled Count</th>
+        <th>No Showup Count</th>
+        <th>Vaccinated Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%
+      for ( var ii = 0; ii < summary.length; ii++ )
+      {
+        %><tr>
+            <td>
+                <%= summary[ii].appt_date.toLocaleDateString('en-us', {weekday: 'long'}) %>
+                <%= summary[ii].appt_date.toLocaleDateString('en-us') %>
+            </td>
+            <td align="cener">
+                <%= summary[ii].from_time %>:00 - <%= summary[ii].to_time %>:00
+            </td>
+            <td align="right">
+              <%= summary[ii].quota %>
+            </td>
+            <td align="right">
+              <%= summary[ii].available_quota %>
+            </td>
+            <td align="right">
+              <% if (summary[ii].accepted_count == 0) { %>   
+                <%= summary[ii].accepted_count %>
+              <% } else { %>
+                <a href="/provider/view_patient?ao_id=<%= summary[ii].ao_id %>&from_date=<%= fromDate %>&to_date=<%= toDate %>" data-toggle="tooltip" title="Click to view patients" > <%= summary[ii].accepted_count %>  </a>
+              <% } %>
+            </td>
+            <td align="right">
+              <%= summary[ii].pending_count %>
+            </td>
+            <td align="right">
+              <%= summary[ii].cancelled_count %>
+            </td>
+            <td align="right">
+              <%= summary[ii].no_showup_count %>
+            </td>
+            <td align="right">
+              <%= summary[ii].vaccinated_count %>
+            </td>
+          </tr>
+      <%
+      }
+      %>
+    </tbody>
+    </table>
+    </div>
+  <br>
+  <div class="center80">
+    You could <a href="/provider/register?edit=1">edit</a> account.<br><br>
+  <form action="/provider/logout?_method=DELETE" method="POST">
+    <button type="submit">Log Out</button>
+  </form>
+  </div>
+</div>

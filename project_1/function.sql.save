@@ -1,0 +1,167 @@
+-- (1)
+DROP FUNCTION insert_patient;
+
+CREATE OR REPLACE FUNCTION insert_patient(_ssn varchar(10), _pname varchar(200), _dob timestamp, _phone varchar(20), _address_1 varchar(60), _address_2 varchar(60), _city VARCHAR(60), _state VARCHAR(2), _zip_code VARCHAR(5), _email VARCHAR(50))
+RETURNS integer AS
+$BODY$
+   DECLARE
+      new_patient_id integer;
+   BEGIN
+     INSERT INTO patient(ssn, pname, dob, phone, address_1, address_2, city, state, zip_code, email)
+     VALUES(_ssn, _pname, _dob, _phone, _address_1, _address_2, _city, _state, _zip_code, _email);
+     select lastval() into new_patient_id;
+     RETURN new_patient_id;
+
+   END;
+$BODY$
+LANGUAGE 'plpgsql' VOLATILE;
+
+-- select * from patient where ssn = '0000000000';
+-- select * from insert_patient('0000000000', 'dummy name', '2010-02-03', '6097161234', 'address 1', 'address 2', 'Newark', 'NJ', '12345', 'dummy@gmail.com');
+-- select * from patient where ssn = '0000000000';
+
+-- (2)
+DROP FUNCTION insert_appointment;
+
+CREATE OR REPLACE FUNCTION insert_appointment(_provider_name varchar(200), _appt_dt DATE, _cal_time_id int, _quota int)
+RETURNS integer AS
+$BODY$
+   DECLARE
+      new_appt_id integer;
+   BEGIN
+     INSERT INTO appointment_offer(pid, appt_date, cal_time_id, quota, available_quota)
+     VALUES((select pid from provider where pname = _provider_name), _appt_dt, _cal_time_id, _quota, _quota);
+     select lastval() into new_appt_id;
+     RETURN new_appt_id;
+   END;
+$BODY$
+LANGUAGE 'plpgsql' VOLATILE;
+
+-- select * from appointment_offer where appt_date = '2021-06-15';
+-- select * from insert_appointment('CVS Pharmacy', '2021-06-15', 1, 30);
+-- select * from appointment_offer where appt_date = '2021-06-15';
+
+
+-- (3)
+DROP FUNCTION get_avail_appt_by_patient;
+
+CREATE OR REPLACE FUNCTION get_avail_appt_by_patient(_current_ts TIMESTAMP, _patient_id int)
+RETURNS TABLE(pid INT, pname varchar(200), appt_date DATE, from_time INT, to_time INT, distance INT) AS
+$func$
+BEGIN
+  RETURN QUERY
+     SELECT p.pid, p.pname, ao.appt_date, ct.from_time, ct.to_time, dbz.distance
+     FROM patient pat
+     INNER JOIN patient_group ON patient_group.pid = pat.pid
+     INNER JOIN patient_appt_preference pap ON pap.pid = pat.pid
+     INNER JOIN priority_group pg ON patient_group.priority_group_id = pg.gid
+     INNER JOIN appointment_offer ao ON ao.available_quota > 0
+     INNER JOIN provider p ON p.pid = ao.pid
+     INNER JOIN calendar_time ct ON ct.tid = ao.cal_time_id
+     inner join calendar_day cd ON cd.did = pap.preferred_day
+     INNER JOIN calendar_days cds on cd.did = cds.did
+     LEFT OUTER JOIN distance_by_zipcode dbz ON (pat.zip_code = dbz.zipcode_1 and p.zip_code = dbz.zipcode_2) or (pat.zip_code = dbz.zipcode_2 and p.zip_code = dbz.zipcode_1)
+     WHERE pat.pid = _patient_id
+       AND pap.preferred_time = ao.cal_time_id
+       AND pg.eligible_date <= _current_ts
+       AND ao.appt_date >= _current_ts
+       AND ao.appt_date <= _current_ts + INTERVAL '7 day'
+       AND extract(dow from ao.appt_date) = cds.day_of_week
+       AND pap.max_distance >= COALESCE(dbz.distance, 10000)
+     group by p.pid, p.pname, ao.appt_date, pap.preferred_time, ct.from_time, ct.to_time, dbz.distance
+     order by dbz.distance asc;
+END
+$func$ LANGUAGE plpgsql;
+
+-- select * from get_avail_appt_by_patient(timestamp '2021-04-03 12:45:01', 14);
+
+-- (4)
+DROP FUNCTION get_pri_grp_appt_summary;
+
+CREATE OR REPLACE FUNCTION get_pri_grp_appt_summary()
+RETURNS TABLE(priority_group_id INT, priority_group_name varchar(200), num_of_vaccinated BIGINT, num_of_scheduled BIGINT, num_of_waiting BIGINT) AS
+$func$
+BEGIN
+  RETURN QUERY
+    with curr_status as (
+	select p.hid, p.pid, p.aid, p.status, p.show_up, p.vaccinated, p.added_ts
+	from patient_appt_history p
+	where added_ts = (select max(added_ts) from patient_appt_history p2 where p2.pid = p.pid)
+    )
+    select pr_g.gid, pr_g.gname, sum(CASE WHEN pap.vaccinated = 'Y' then 1 else 0 end) as "vaccinated",
+           sum(CASE WHEN pap.vaccinated is NULL and pap.show_up is NULL and pap.status = 'accepted' then 1 else 0 end) as "scheduled",
+	   sum(CASE WHEN pg.pid IS NOT NULL and pap.vaccinated is NULL and not (pap.show_up is NOT NULL and pap.show_up = 'Y' and pap.status = 'accepted') then 1 else 0 end) as "waiting"
+    from priority_group pr_g
+    LEFT OUTER JOIN patient_group pg ON pr_g.gid = pg.priority_group_id
+    LEFT OUTER JOIN patient p ON pg.pid = p.pid
+    LEFT OUTER JOIN curr_status pap ON p.pid = pap.pid
+    group by pr_g.gid, pr_g.gname
+    order by pr_g.gid;
+END
+$func$ LANGUAGE plpgsql;
+
+-- select * from get_pri_grp_appt_summary();
+
+
+-- (5)
+DROP FUNCTION get_patient_eligible_date;
+
+CREATE OR REPLACE FUNCTION get_patient_eligible_date()
+RETURNS TABLE(id INT, name varchar(200), eligible_date DATE) AS
+$func$
+BEGIN
+  RETURN QUERY
+    select p.pid, p.pname, pri_g.eligible_date
+    from patient p
+    LEFT OUTER JOIN patient_group pat_g ON p.pid = pat_g.pid
+    LEFT OUTER JOIN priority_group pri_g ON pat_g.priority_group_id = pri_g.gid;
+END
+$func$ LANGUAGE plpgsql;
+
+-- select * from get_patient_eligible_date();
+
+-- (6)
+DROP FUNCTION get_patient_appt_summary;
+
+CREATE OR REPLACE FUNCTION get_patient_appt_summary()
+RETURNS TABLE(id INT, name varchar(200), cancelled_out BIGINT, no_showup_count BIGINT) AS
+$func$
+BEGIN
+  RETURN QUERY
+    WITH tmp AS (
+      SELECT pid, SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) AS "cancelled_count",
+      	     sum(CASE WHEN status = 'accepted' and (show_up is NULL or show_up != 'Y') THEN 1 ELSE 0 END) AS "no_showup_count"
+      FROM patient_appt_history
+      GROUP BY pid
+    )
+    SELECT pat.pid, pat.pname, tmp.cancelled_count, tmp.no_showup_count
+    FROM patient pat
+    INNER JOIN tmp ON pat.pid = tmp.pid
+    WHERE (tmp.cancelled_count >= 3) OR (tmp.no_showup_count >= 2);
+END
+$func$ LANGUAGE plpgsql;
+
+-- select * from get_patient_appt_summary();
+
+
+-- (7)
+DROP FUNCTION get_provider_with_max_vac;
+
+CREATE OR REPLACE FUNCTION get_provider_with_max_vac()
+RETURNS TABLE(id INT, name varchar(200), max_vac_count BIGINT) AS
+$func$
+BEGIN
+  RETURN QUERY
+    select p.pid, p.pname, count(*) as max_vac_count
+    from provider p
+    inner join appointment_offer ao ON ao.pid = p.pid
+    inner join patient_appt_history pah ON pah.aid = ao.aid
+    where pah.vaccinated = 'Y'
+    group by p.pid, p.pname
+    order by 3 desc
+    limit 1;
+END
+$func$ LANGUAGE plpgsql;
+
+-- select * from get_provider_with_max_vac();
+

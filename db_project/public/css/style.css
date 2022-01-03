@@ -1,0 +1,105 @@
+/*
+ * Hi! I'm your stylesheet! I've got some sensible defaults here,
+ * but feel free to change me to your heart's content!
+ */
+
+/*
+* {
+  box-sizing: border-box;
+  font-family: Chalkduster, fantasy;
+  color: black;
+  box-shadow: darkslategray;
+}
+*/
+
+h1 {
+  text-align:center;
+}
+h2 {
+  text-align:center;
+}
+h3 {
+  text-align:center;
+}
+
+xxbody {
+  background:darkorchid ;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+  width: 100vw;
+}
+
+nav {
+  align-items: center;
+  background-color: darkgreen;
+  color: #c0c0c0;
+  display: flex;
+  height: 80px;
+  padding: 10px;
+}
+.navBarItem {
+  padding: 15px
+}
+
+main {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.images {
+  width: 777px;
+  height: 777px;
+  border: 25px groove yellow;
+}
+.listItems {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.center {
+  margin: auto;
+  width: 50%;
+  /* border: 1px solid green; */
+  padding: 10px;
+}
+
+.center80 {
+  margin: auto;
+  width: 80%;
+  /* border: 1px solid green; */
+  padding: 10px;
+}
+
+.error {
+  color: red;
+}
+
+.my-custom-scrollbar {
+  position: relative;
+  height: 600px;
+  overflow: auto;
+}
+.my-custom-scrollbar_small {
+  position: relative;
+  height: 550px;
+  overflow: auto;
+}
+
+.table-wrapper-scroll-y {
+  display: block;
+}
+
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_asc_disabled:after,
+table.dataTable thead .sorting_asc_disabled:before,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting_desc:before,
+table.dataTable thead .sorting_desc_disabled:after,
+table.dataTable thead .sorting_desc_disabled:before {
+bottom: .5em;
+}

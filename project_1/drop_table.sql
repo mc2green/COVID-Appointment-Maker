@@ -1,0 +1,14 @@
+drop table distance_by_zipcode;
+drop table patient_group;
+drop table patient_appt_history;
+drop table appointment_offer;
+drop table priority_group;
+drop table patient_login_info;
+drop table patient_appt_preference;
+drop table calendar_days;
+drop table calendar_day;
+drop table calendar_time;
+drop table patient;
+drop table provider;
+drop table provider_type;
+drop table provider_login_info;

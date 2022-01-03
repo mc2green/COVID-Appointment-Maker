@@ -1,0 +1,56 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="/css/style.css">
+
+<h2>Cancel Appointment</h2>
+<div class="container center80">
+
+<h4>Your current appointment:</h4>
+<table class="table table-hover">
+  <tr><th>Appt. Date</th><td>
+    <%= appt.appt_date.toLocaleDateString('en-us', {weekday: 'long'}) %>
+    <%= appt.appt_date.toLocaleDateString('en-us') %>
+  </td></tr>
+  <tr><th>Appt. Time</th><td><%= appt.appt_from_time %>:00 - <%= appt.appt_to_time %>:00</td></tr>
+  <tr><th>Status</th><td>
+    <% color = appt.status == "accepted" ? "blue" : "red" %>
+    <font color="<%= color %>"><%= appt.status %></font>
+  </td></tr>
+  <tr><th>Scheduled Date</th><td><%= appt.added_ts %></td></tr>
+  <tr><th>Provider</th><td><%= appt.provider_name %></td></tr>
+  <tr><th>Provier Phone</th><td><%= appt.provider_phone %></td></tr>
+  <tr><th>Provider Address</th><td>
+    <%= appt.provider_address_1 %> <%= appt.provider_address_2 %><br>
+    <%= appt.provider_city %><br>
+    <%= appt.provider_state %><br>
+    <%= appt.provider_zip_code %>
+  </td></tr>
+</table>
+<% if (appt.status == 'accepted') { %>
+  You must cancel it before you could reschedule a new one.
+  <br>
+  <form action="/patient/cancel" method="POST">
+    <input type="hidden" id="rec_id" name="rec_id" value="<%= appt.hid %>" >
+    <button type="submit">Yes, cancel it</button>
+  </form>
+<% } else if (appt.status == 'pending') { %>
+  You must accept it; otherwise the appointment will be cancelled automatically 24 hours before the appointment time.
+  <br>
+  <form action="/patient/accept" method="POST">
+    <input type="hidden" id="rec_id" name="rec_id" value="<%= appt.hid %>" >
+    <button type="submit">Yes, accept it</button>
+  </form>
+  <br>
+  You could decline it for now and schedule a new one in the future.
+  <br>
+  <form action="/patient/decline" method="POST">
+    <input type="hidden" id="rec_id" name="rec_id" value="<%= appt.hid %>" >
+    <button type="submit">Yes, decline it</button>
+  </form>
+<% } %>
+
+<br>
+<form action="/patient/logout?_method=DELETE" method="POST">
+  <button type="submit">Log Out</button>
+</form>
+</div>

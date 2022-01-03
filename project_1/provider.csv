@@ -1,0 +1,4 @@
+pid,pname,provider_type_id,phone,address_1,address_2,city,state,zip_code
+1,"CVS Pharmacy",3,"609-799-0233","350 Princeton Hightstown Rd",null,"West Windsor","NJ","08550"
+2,"Walgreens Pharmacy",3,"609-799-4114","41 Princeton Hightstown Rd",null,"West Windsor","NJ","08550"
+3,"Walmart",3,"609-443-6159","839 US-130",null,"East Windsor","NJ","08520"

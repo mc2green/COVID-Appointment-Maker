@@ -1,0 +1,36 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="/css/style.css">
+
+<h2>Provider Login</h2>
+
+<div class="container center">
+
+<form action="/provider/login" method="POST">
+  <table class="center">
+    <tr>
+      <td><label for="login_name">Login Name</label></td>
+      <td><input type="text" id="login_name" name="login_name" required></td>
+    </tr>
+    <tr>
+      <td><label for="password">Password</label></td>
+      <td><input type="password" id="password" name="password" required></td>
+    </tr>
+    <tr><td colspan"2">&nbsp;</td></tr>
+    <tr>
+      <% if (messages.error) { %>
+        <td class="error" colspan="2">
+        <%= messages.error %>
+        </td>
+      <% } %>
+    </tr>
+    <tr>
+      <td align="center" colspan="2"><button type="submit">Login</button></td>
+    </tr>
+    <tr>
+      <td colspan="2"><a href="register">Register</a></td>
+    </tr>
+  </table>
+</form>
+
+</div>

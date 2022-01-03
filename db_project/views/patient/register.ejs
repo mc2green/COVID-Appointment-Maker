@@ -1,0 +1,144 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="/css/style.css">
+
+<% if (mode == 'add') { %>
+  <h2>Register</h2>
+  <% } else { %>
+    <h2> Update Registration</h2>
+  <% } %>
+
+<div class="container center80">
+
+<form action="/patient/register" method="POST">
+  <input type="hidden" id="mode" name="mode" value="<%= mode %>" >
+  <table class="center">
+    <tr><td colspan="2"><b>Web Login Info:</b></td></tr>
+    <tr>
+      <td><label for="name">Name</label></td>
+      <td><input type="text" id="name" name="name" value="<%= name %>" required></td>
+    </tr>
+    <tr>
+      <td><label for="email">Email</label></td>
+      <td><input type="email" id="email" name="email" value="<%= email %>" <%= mode=='add' ? 'required' : 'readonly' %> ></td>
+    </tr>
+    <tr>
+      <td><label for="password">Password</label></td>
+      <td><input type="password" id="password" name="password" required></td>
+    </tr>
+    <tr>
+      <td><label for="confirmed_password">Confirm Password</label></td>
+      <td><input type="password" id="confirmed_password" name="confirmed_password" required></td>
+    </tr>
+    <tr><td colspan="2">&nbsp;</td></tr>
+    <tr><td colspan="2"><b>Personal Info:</b></td></tr>
+    <tr>
+      <td><label for="ssn">Social Security Number</label></td>
+      <td><input type="text" id="ssn" name="ssn" value="<%= ssn %>" placeholder="000000000" maxlength="9" minlength="9" pattern="[0-9]{9}" required></td>
+    </tr>
+    <tr>
+      <td><label for="dob">Date of Birth</label></td>
+      <td><input type="date" id="dob" name="dob" value="<%= dob %>" placeholder="mm/dd/yy" required></td>
+    </tr>
+    <tr>
+      <td><label for="phone_number">Phone Number</label></td>
+      <td><input type="tel" id="phone_number" name="phone_number" value="<%= phone %>" placeholder="999-999-9999" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required></td>
+    </tr>
+    <tr>
+      <td><label for="address_1">Address 1</label></td>
+      <td><input type="text" id="address_1" name="address_1" value="<%= address_1 %>" maxlength="60" minlength="1" required></td>
+    </tr>
+    <tr>
+      <td><label for="address_2">Address 2</label></td>
+      <td><input type="text" id="address_2" name="address_2" value="<%= address_2 %>" maxlength="40" minlength="1"></td>
+    </tr>
+    <tr>
+      <td><label for="city">City</label></td>
+      <td><input type="text" id="city" name="city" value="<%= city %>" maxlength="40" minlength="1" required></td>
+    </tr>
+    <tr>
+      <td><label for="state">State</label></td>
+      <td><select class="custom-select {{ $errors->has('state') ? 'is-invalid' : '' %> " name="state">
+      <option value="">Select a State</option>
+      <option value="" disabled>----------------</option>
+      <option value="AL" <%= state == 'AL' ? 'selected' : '' %> >Alabama</option>
+      <option value="AK" <%= state == 'AK' ? 'selected' : '' %> >Alaska</option>
+      <option value="AZ" <%= state == 'AZ' ? 'selected' : '' %> >Arizona</option>
+      <option value="AR" <%= state == 'AR' ? 'selected' : '' %> >Arkansas</option>
+      <option value="CA" <%= state == 'CA' ? 'selected' : '' %> >California</option>
+      <option value="CO" <%= state == 'CO' ? 'selected' : '' %> >Colorado</option>
+      <option value="CT" <%= state == 'CT' ? 'selected' : '' %> >Connecticut</option>
+      <option value="DE" <%= state == 'DE' ? 'selected' : '' %> >Delaware</option>
+      <option value="DC" <%= state == 'DC' ? 'selected' : '' %> >District Of Columbia</option>
+      <option value="FL" <%= state == 'FL' ? 'selected' : '' %> >Florida</option>
+      <option value="GA" <%= state == 'GA' ? 'selected' : '' %> >Georgia</option>
+      <option value="HI" <%= state == 'HI' ? 'selected' : '' %> >Hawaii</option>
+      <option value="ID" <%= state == 'ID' ? 'selected' : '' %> >Idaho</option>
+      <option value="IL" <%= state == 'IL' ? 'selected' : '' %> >Illinois</option>
+      <option value="IN" <%= state == 'IN' ? 'selected' : '' %> >Indiana</option>
+      <option value="IA" <%= state == 'IA' ? 'selected' : '' %> >Iowa</option>
+      <option value="KS" <%= state == 'KS' ? 'selected' : '' %> >Kansas</option>
+      <option value="KY" <%= state == 'KY' ? 'selected' : '' %> >Kentucky</option>
+      <option value="LA" <%= state == 'LA' ? 'selected' : '' %> >Louisiana</option>
+      <option value="ME" <%= state == 'ME' ? 'selected' : '' %> >Maine</option>
+      <option value="MD" <%= state == 'MD' ? 'selected' : '' %> >Maryland</option>
+      <option value="MA" <%= state == 'MA' ? 'selected' : '' %> >Massachusetts</option>
+      <option value="MI" <%= state == 'MI' ? 'selected' : '' %> >Michigan</option>
+      <option value="MN" <%= state == 'MN' ? 'selected' : '' %> >Minnesota</option>
+      <option value="MS" <%= state == 'MS' ? 'selected' : '' %> >Mississippi</option>
+      <option value="MO" <%= state == 'MO' ? 'selected' : '' %> >Missouri</option>
+      <option value="MT" <%= state == 'MT' ? 'selected' : '' %> >Montana</option>
+      <option value="NE" <%= state == 'NE' ? 'selected' : '' %> >Nebraska</option>
+      <option value="NV" <%= state == 'NV' ? 'selected' : '' %> >Nevada</option>
+      <option value="NH" <%= state == 'NH' ? 'selected' : '' %> >New Hampshire</option>
+      <option value="NJ" <%= state == 'NJ' ? 'selected' : '' %> >New Jersey</option>
+      <option value="NM" <%= state == 'NM' ? 'selected' : '' %> >New Mexico</option>
+      <option value="NY" <%= state == 'NY' ? 'selected' : '' %> >New York</option>
+      <option value="NC" <%= state == 'NC' ? 'selected' : '' %> >North Carolina</option>
+      <option value="ND" <%= state == 'ND' ? 'selected' : '' %> >North Dakota</option>
+      <option value="OH" <%= state == 'OH' ? 'selected' : '' %> >Ohio</option>
+      <option value="OK" <%= state == 'OK' ? 'selected' : '' %> >Oklahoma</option>
+      <option value="OR" <%= state == 'OR' ? 'selected' : '' %> >Oregon</option>
+      <option value="PA" <%= state == 'PA' ? 'selected' : '' %> >Pennsylvania</option>
+      <option value="RI" <%= state == 'RI' ? 'selected' : '' %> >Rhode Island</option>
+      <option value="SC" <%= state == 'SC' ? 'selected' : '' %> >South Carolina</option>
+      <option value="SD" <%= state == 'SD' ? 'selected' : '' %> >South Dakota</option>
+      <option value="TN" <%= state == 'TN' ? 'selected' : '' %> >Tennessee</option>
+      <option value="TX" <%= state == 'TX' ? 'selected' : '' %> >Texas</option>
+      <option value="UT" <%= state == 'UT' ? 'selected' : '' %> >Utah</option>
+      <option value="VT" <%= state == 'VT' ? 'selected' : '' %> >Vermont</option>
+      <option value="VA" <%= state == 'VA' ? 'selected' : '' %> >Virginia</option>
+      <option value="WA" <%= state == 'WA' ? 'selected' : '' %> >Washington</option>
+      <option value="WV" <%= state == 'WV' ? 'selected' : '' %> >West Virginia</option>
+      <option value="WI" <%= state == 'WI' ? 'selected' : '' %> >Wisconsin</option>
+      <option value="WY" <%= state == 'WY' ? 'selected' : '' %> >Wyoming</option>
+  </select></td>
+  </tr>
+  <tr>
+    <td><label for="zipcode">Zip Code</label></td>
+    <td><input type="text" id="zipcode" name="zipcode" value="<%= zipcode %>" maxlength="5" minlength="5" pattern="[0-9]{5}" required></td>
+  </tr>
+  <tr><td colspan="2">&nbsp;</td></tr>
+  <tr>
+    <td align="center" colspan="2">
+      <button type="submit">
+        <%= (mode=="add") ? "Register" : "Update" %>
+      </button>
+    </td>
+  </tr>
+  <% if (mode != "add") { %>
+    <tr><td colspan="2">Back to <a href="reservation">reservation</a> page.</td></tr>
+  <% } %>
+  <tr><td colspan="2">Back to <a href="login">login</a> page.</td></tr>
+  </table>
+</form>
+
+<% if (mode != "add") { %>
+  <div class="center">
+  <form action="/patient/logout?_method=DELETE" method="POST">
+    <button type="submit">Log Out</button>
+  </form>
+  </div>
+<% } %>
+
+</div>

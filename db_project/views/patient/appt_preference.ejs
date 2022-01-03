@@ -1,0 +1,63 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="/css/style.css">
+
+<h2>Appointment Preference</h2>
+<br>
+<div class="container center">
+
+<% if (messages.error) { %>
+  <%= messages.error %>
+<% } %>
+
+<table class="center">
+<form action="/patient/appt_preference" method="POST">
+  <input type="hidden" id="mode" name="mode" value="<%= mode %>" >
+  <tr>
+    <td><label for="pref_day">Day</label></td>
+    <td><select id="pref_day" name="pref_day">
+        <%
+        for ( var ii = 0; ii < calDay.length; ii++ )
+        {
+            var selected = ( pref && pref.pref_day_id == calDay[ii].id ) ? "selected" : "";
+            %><option value="<%= calDay[ii].id %>" <%=selected %>><%= calDay[ii].description %></option><%
+        }
+        %>
+        </select>
+    </td>
+  </tr>
+  <tr>
+    <td><label for="pref_time">Time</label></td>
+    <td><select id="pref_time" name="pref_time">
+        <%
+        for ( var ii = 0; ii < calTime.length; ii++ )
+        {
+            var selected = ( pref && pref.pref_time_id == calTime[ii].id ) ? "selected" : "";
+            %><option value="<%= calTime[ii].id %>" <%=selected %>><%= String(calTime[ii].from_time) + "-" + String(calTime[ii].to_time) %></option><%
+        }
+        %>
+        </select>
+    </td>
+  </tr>
+  <tr>
+    <td><label for="max_distance">Max. distance</label></td>
+    <td><input type="text" id="max_distance" name="max_distance" value="<%= pref ? pref.max_distance : ''%>" maxlength="3" minlength="0" pattern="[0-9]{1,}" required></td>
+  </tr>
+  <tr><td colspan="2">&nbsp;</td></tr>
+  <tr><td align="center" colspan="2">
+    <button type="submit"><%= (mode=="add") ? "Add" : "Update" %></button>
+  </td></tr>
+</form>
+</table>
+
+<br>
+<div class="center">
+  Back to <a href="/patient/reservation">reservation</a> page.
+  <br>
+  <br>
+  <form action="/patient/logout?_method=DELETE" method="POST">
+  <button type="submit">Log Out</button>
+  </form>
+</div>
+
+</div>

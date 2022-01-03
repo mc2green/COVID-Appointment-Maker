@@ -1,0 +1,29 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="/css/style.css">
+
+<div class="container center">
+
+<% if (login_name) { %>
+  <h3>Welcome Back - <%= login_name %></h3>
+  <br>
+  Please 
+  <a href="/provider/login">Login</a>
+<% } else { %>
+  <h3>Welcome to Visit This Provider Page</h3>
+  <br>
+  <div class="center">
+  Please 
+  <a href="/provider/login">Login</a>
+  or
+  <a href="/provider/register">Register</a>
+<% } %>
+</div>
+
+<%#
+<form action="/provider/logout?_method=DELETE" method="POST">
+  <button type="submit">Log Out</button>
+</form>
+%>
+
+</div>

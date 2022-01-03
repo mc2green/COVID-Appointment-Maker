@@ -1,0 +1,63 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="/css/style.css">
+
+<H2>Available Appointments</H2>
+
+<div class="container">
+<br>
+<form action="/patient/schedule" method="POST">
+  <div>
+    <table class="table center80">
+        <thead>
+          <tr>
+            <th>Provider</th>
+            <th>Date</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Distance</th>
+          </tr>
+        </thead>
+        <tbody>
+            <%
+            for ( var ii = 0; ii < availAppts.length; ii++ )
+            {
+                %><tr>
+                    <td>
+                        <input type="radio" name="appt_id" id="radio<%= ii %>" value="<%= availAppts[ii].appt_id %>" />
+                        <label for="radio<%= ii %>"> <%= availAppts[ii].name %> </label>
+                    </td>
+                    <td>
+                        <%= availAppts[ii].appt_date.toLocaleDateString('en-us', {weekday: 'long'}) %>
+                        <%= availAppts[ii].appt_date.toLocaleDateString('en-us') %>
+                    </td>
+                    <td align="cener">
+                        <%= availAppts[ii].from_time %>:00
+                    </td>
+                    <td align="cener">
+                        <%= availAppts[ii].to_time %>:00
+                    </td>
+                    <td align="right">
+                        <%= availAppts[ii].distance %>
+                    </td>
+                </tr>
+                <%
+            }
+            %>
+            <tr><td colspan="5">&nbsp;</td></tr>
+            <tr><td align="center" colspan="5"><button type="submit">Submit</button></td></tr>
+        </tbody>
+    </table>
+  </div>
+</form>
+
+<br>
+<div class="center80">
+    Back to <a href="/patient/reservation">reservation</a> page.
+    <br>
+    <br>
+    <form action="/patient/logout?_method=DELETE" method="POST">
+    <button type="submit">Log Out</button>
+    </form>
+</div>
+</div>

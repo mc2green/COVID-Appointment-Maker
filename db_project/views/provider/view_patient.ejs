@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+
+<link href="http://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">  
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link rel="stylesheet"  href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css"></style>
+<script type="text/javascript" src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+
+<script>
+  $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip(); 
+  });
+</script>
+
+<link rel="stylesheet" href="/css/style.css">
+
+<!-- Datatables initialization -->
+<script>
+  // Basic example
+  $(document).ready(function () {
+    $('#dtVerticalScrollExample').dataTable({
+      "scrollY": "400px",
+      "scrollCollapse": true,
+    });
+    $('.dataTables_length').addClass('bs-select');
+    // Datatable vertical dynamic height
+    $('#dtDynamicVerticalScrollExample').dataTable({
+      "scrollY": "50vh",
+      "scrollCollapse": true,
+      "paging": true
+    });
+    $('.dataTables_length').addClass('bs-select');
+    // Datatable horizontal scroll
+    $('#dtHorizontalExample').DataTable({
+      "scrollX": true
+    });
+    $('.dataTables_length').addClass('bs-select');
+    // Datatable horizontal and vertical scroll
+    $('#dtHorizontalVerticalExample').dataTable({
+      "scrollX": true,
+      "scrollY": 200,
+    });
+    $('.dataTables_length').addClass('bs-select');
+  });
+  var myCustomScrollbar = document.querySelector('.my-custom-scrollbar_small');
+  var ps = new PerfectScrollbar(myCustomScrollbar);
+
+  var scrollbarY = document.querySelector('.ps.ps--active-y>.ps__rail-y');
+
+  myCustomScrollbar.onscroll = function () {
+    scrollbarY.style.cssText =
+      `top: ${this.scrollTop}px!important; height: 400px; right: ${-this.scrollLeft}px`;
+  }
+</script>
+
+
+<h2>Provider Dashboard - <%= name %></h2>
+
+<div class="container center80">
+
+  <h4>Patients for <%= apptInfo.appt_date.toLocaleDateString('en-us', {weekday: 'long'}) + " " + apptInfo.appt_date.toLocaleDateString('en-us') %> &nbsp; &nbsp;  <%= apptInfo.from_time + ":00 - " + apptInfo.to_time + ":00" %></h4>
+  <br>
+  <div class="table-wrapper-scroll-y my-custom-scrollbar_small">
+  <!-- <table class="table center80 table-bordered table-striped mb-0">  -->
+  <table id="dtDynamicVerticalScrollExample" class="table center80 table-striped table-bordered" cellspacing="0"
+  width="80%">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Show up</th>
+        <th>Vaccinated</th>
+        <th>Reservatoin Date</th>
+        <th>Appointment Reference</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%
+      for ( var ii = 0; ii < patients.length; ii++ )
+      {
+        %><tr>
+            <td>
+                <%= patients[ii].name %>
+            </td>
+            <td align="cener">
+              <%= patients[ii].status %>
+            </td>
+            <td align="center">
+                <%= patients[ii].show_up %>
+            </td>
+            <td align="center">
+              <%= patients[ii].vaccinated %>
+            </td>
+            <td align="right">
+              <%= patients[ii].added_ts %>
+            </td>
+            <td align="right">
+              <%= patients[ii].hid %>
+            </td>
+          </tr>
+      <%
+      }
+      %>
+    </tbody>
+  </table>
+
+  <script>
+    // get selected row
+    // display selected row data in text input
+ 
+    var table = document.getElementById("dtDynamicVerticalScrollExample"),rIndex;
+    console.debug("table: " + table)
+    for(var i = 1; i < table.rows.length; i++)
+    {
+        table.rows[i].onclick = function()
+        {
+          rIndex = this.rowIndex;
+          console.log(rIndex);
+          
+          document.getElementById("fname").innerHTML = this.cells[0].innerHTML;
+          var ele = document.getElementsByName('show_up');
+          ele[0].checked = false;
+          ele[1].checked = false;
+          
+          console.log("show_up from row: " + this.cells[2].innerHTML.trim());
+          if (this.cells[2].innerHTML.trim() == "Y") {
+            ele[0].checked = true;
+          } else if (this.cells[2].innerHTML.trim() == "N") {
+            ele[1].checked = true;
+          }
+
+          var ele = document.getElementsByName('vaccinated');
+          ele[0].checked = false;
+          ele[1].checked = false;
+
+          if (this.cells[3].innerHTML.trim() == "Y") {
+            ele[0].checked = true;
+          } else if (this.cells[3].innerHTML.trim() == "N") {
+            ele[1].checked = true;
+          }
+
+          var status = this.cells[1].innerHTML.trim();
+          if (status == 'accepted') {
+            document.getElementById("x_update_status").disabled = false;
+          } else {
+            document.getElementById("x_update_status").disabled = true;
+          }
+        };
+    }
+    
+    function resetStatus() {
+      var ele = document.getElementsByName('show_up');
+      ele[0].checked = false;
+      ele[1].checked = false;
+      var ele = document.getElementsByName('vaccinated');
+      ele[0].checked = false;
+      ele[1].checked = false;
+      document.getElementById("x_update_status").disabled = true;
+      
+    }
+
+   // edit the row
+    function editRow()
+    {
+        // table.rows[rIndex].cells[0].innerHTML = document.getElementById("fname").value;
+        var ele = document.getElementsByName('show_up');
+        console.log("show_up by id: " + ele);
+        var x_show_up = "N";
+        for(i = 0; i < ele.length; i++) {
+          console.log("index: " + i + ", checked: " + ele[i].checked + ", value: " + ele[i].value)
+          if(ele[i].checked) {
+            table.rows[rIndex].cells[2].innerHTML = ele[i].value;
+            x_show_up = ele[i].value;
+          }
+        }
+        // table.rows[rIndex].cells[2].innerHTML = document.getElementById("show_up").value;
+        
+        var ele = document.getElementsByName('vaccinated');
+        var x_vaccinated = "N";
+        for(i = 0; i < ele.length; i++) {
+          console.log("index: " + i + ", checked: " + ele[i].checked + ", value: " + ele[i].value)
+          if(ele[i].checked) {
+            table.rows[rIndex].cells[3].innerHTML = ele[i].value;
+            x_vaccinated = ele[i].value;
+          }
+        }
+        console.log("appt_hist_id: " + parseInt(table.rows[rIndex].cells[5].innerHTML));
+        console.log("show_up: " + x_show_up);
+        console.log("vaccinated: " + x_vaccinated);
+        var params = 'appt_hist_id=' + parseInt(table.rows[rIndex].cells[5].innerHTML) + '&show_up=' + x_show_up + '&vaccinated=' + x_vaccinated;
+
+        var data = new FormData();
+        data.append('appt_hist_id', table.rows[rIndex].cells[5]);
+        data.append('show_up', x_show_up);
+        data.append('vaccinated', x_vaccinated);
+        // console.dir(data);
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          console.debug("got back from post");
+        }
+      };
+      xhttp.open("POST", "/provider/set_patient_status", true);
+      xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhttp.send(params);
+        
+        alert("Status was updated successfully.");
+        resetStatus();
+      }
+  
+  </script>    
+  <br>
+  <br>
+  </div>
+  <div class="center80">
+  Name: <label style="font-weight: bold;" id="fname"></label>
+  <br>
+  Show up:&nbsp; &nbsp;<input type="radio" id="show_up_1" name="show_up" value="Y"> show up
+           &nbsp;
+           <input type="radio"  id="show_up_2" name="show_up" value="N"> not show up
+  <br>
+  Vaccinated:&nbsp; &nbsp; <input type="radio" id="vaccinated_1" name="vaccinated" value="Y"> yes
+            &nbsp;
+            <input type="radio" id="vaccinated_2" name="vaccinated" value="N"> no
+  <br>
+  <button onclick="editRow();" id="x_update_status" name="x_update_status" disabled>Update</button><br><br>
+  <br>
+  </div>
+  <div class="center80">
+    You could go back to <a href="/provider/dashboard?from_date=<%= fromDate %>&to_date=<%= toDate %>">dashboard</a> page.
+    <br>
+    You could <a href="/provider/register?edit=1">edit</a> account.<br><br>
+  <form action="/provider/logout?_method=DELETE" method="POST">
+    <button type="submit">Log Out</button>
+  </form>
+  </div>
+</div>  
+
+
+</html>

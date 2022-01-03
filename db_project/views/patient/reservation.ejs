@@ -1,0 +1,88 @@
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/style.css">
+
+<h2>Reservation</h2>
+
+<div class="container">
+
+<% if (pref) { %>
+<h4>Your appointment preference:</h4>
+<table class="table-bordered">
+  <tr>
+    <th>Day</th>
+    <td><%= pref.pref_day_desc %></td>
+  </tr>
+  <tr>
+    <th>From Time</th>
+    <td><%= pref.pref_from_time %>:00</td>
+  </tr>
+  <tr>
+    <th>To Time</th>
+    <td><%= pref.pref_to_time %>:00</td>
+  </tr>
+  <tr>
+    <th>Max. Distance</th>
+    <td><%= pref.max_distance %> miles</td>
+  </tr>
+</table>
+<br>
+<% if (! appt || appt.status == 'cancelled' || appt.status == 'declined') { %>
+You could <a href="/patient/appt_preference?edit=1">edit</a> it<br>
+<% } %>
+<% } else { %>
+You don't have any appointment preference yet. You could <a href="appt_preference">create</a> one.<br>
+You must create appointment preference in order to schedule an appointment.
+<% } %>
+<br>
+<% if (! isEligible) { %>
+You are not eligible yet for "<%= eligibleGroupDate.group_name %>" group until <%= eligibleGroupDate.eligible_date %>.
+<% } %>
+
+<% if (appt) { %>
+<h4>Here is your existing appointment:</h4>
+<table class="table table-hover">
+  <tr><th>Appt. Date</th><td>
+    <%= appt.appt_date.toLocaleDateString('en-us', {weekday: 'long'}) %>
+    <%= appt.appt_date.toLocaleDateString('en-us') %>
+  </td></tr>
+  <tr><th>Appt. Time</th><td><%= appt.appt_from_time %>:00 - <%= appt.appt_to_time %>:00</td></tr>
+  <tr><th>Status</th><td>
+    <% color = appt.status == "accepted" ? "blue" : "red" %>
+    <font color="<%= color %>"><%= appt.status %></font>
+  </td></tr>
+  <tr><th>Scheduled Date</th><td><%= appt.added_ts %></td></tr>
+  <tr><th>Provider</th><td><%= appt.provider_name %></td></tr>
+  <tr><th>Provier Phone</th><td><%= appt.provider_phone %></td></tr>
+  <tr><th>Provider Address</th><td>
+    <%= appt.provider_address_1 %> <%= appt.provider_address_2 %><br>
+    <%= appt.provider_city %><br>
+    <%= appt.provider_state %><br>
+    <%= appt.provider_zip_code %>
+  </td></tr>
+</table>
+<% if (appt.status == 'accepted') { %>
+You could <a href="/patient/reschedule">cancel</a> and then reschedule it.
+<% } else if (appt.status == 'pending') { %>
+You must <a href="/patient/reschedule">accept</a> the appointment; otherwise it will be cancelled automatically 24 hours before the appointment.
+<br>
+You could also <a href="/patient/reschedule">decline</a> the appointment for now and schedule a new appointment in the future.
+<% } else if (appt.status == 'cancelled' || appt.status == 'declined') { 
+  needToSchedule = 1
+  %>
+<% } %>
+<% } %>
+<% if ((!appt && pref && isEligible) || (appt && (appt.status == 'cancelled' || appt.status == 'declined'))) { %>
+You don't have any existing acitive appointment. You could <a href="schedule">schedule</a> one.
+<% } %>
+
+<br>
+<br>
+You could <a href="/patient/register?edit=1">edit</a> account.<br>
+
+<br>
+<form action="/patient/logout?_method=DELETE" method="POST">
+  <button type="submit">Log Out</button>
+</form>
+</div>
